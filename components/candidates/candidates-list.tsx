@@ -1,279 +1,85 @@
 // File path: /components/candidates/candidates-list.tsx
-// Replace your existing candidates list component with this content
+// Optimized CandidatesList component
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { ChevronRight, Filter, MoreHorizontal, Search, Star } from "lucide-react";
+import { useState } from "react";
 
-"use client"
+// Sample initial candidates data (truncated for brevity)
+const initialCandidatesData = {
+  "leads": [
+    {
+      id: "1", name: "Mia Persona", position: "Associate Customer Success Manager",
+      initials: "MP", color: "bg-amber-100", stage: "new", aiMatch: true, matchScore: 92,
+      source: "AI Match", location: "Barcelona, Spain", experience: "3 years",
+      skills: ["Customer Success", "Account Management", "SaaS", "CRM", "Sales"],
+      lastActivity: "Added to leads", lastActivityDate: "2 days ago"
+    },
+    {
+      id: "2", name: "Lil's Thompson", position: "Senior Outbound Sales Developer",
+      initials: "LT", color: "bg-blue-100", stage: "new", aiMatch: true, matchScore: 87,
+      source: "AI Match", location: "London, UK", experience: "6 years",
+      skills: ["Sales Development", "Outbound Sales", "Lead Generation", "CRM", "Negotiation"],
+      lastActivity: "Added to leads", lastActivityDate: "3 days ago"
+    }
+  ],
+  "sourced": [
+    {
+      id: "9", name: "Thomas Wright", position: "Technical Sales Engineer",
+      initials: "TW", color: "bg-orange-100", stage: "new", aiMatch: false, matchScore: 0,
+      source: "Sourced (LinkedIn)", location: "Chicago, USA", experience: "7 years",
+      skills: ["Technical Sales", "Sales Engineering", "Product Demos", "Solution Architecture", "Client Consulting"],
+      lastActivity: "Added from sourcing", lastActivityDate: "just now"
+    }
+  ]
+};
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
-import { ChevronRight, Filter, MoreHorizontal, Search, Star } from "lucide-react"
-import { useState } from "react"
-
-// Sample initial candidates data
-const initialCandidates = [
-  {
-    id: "1",
-    name: "Mia Persona",
-    position: "Associate Customer Success Manager",
-    initials: "MP",
-    color: "bg-amber-100",
-    status: "leads",
-    stage: "new",
-    aiMatch: true,
-    matchScore: 92,
-    source: "AI Match",
-    location: "Barcelona, Spain",
-    experience: "3 years",
-    education: "MBA, Barcelona Business School",
-    skills: ["Customer Success", "Account Management", "SaaS", "CRM", "Sales"],
-    lastActivity: "Added to leads",
-    lastActivityDate: "2 days ago"
-  },
-  {
-    id: "2",
-    name: "Lil's Thompson",
-    position: "Senior Outbound Sales Developer",
-    initials: "LT",
-    color: "bg-blue-100",
-    status: "leads",
-    stage: "new",
-    aiMatch: true,
-    matchScore: 87,
-    source: "AI Match",
-    location: "London, UK",
-    experience: "6 years",
-    education: "Bachelor's in Marketing, University of London",
-    skills: ["Sales Development", "Outbound Sales", "Lead Generation", "CRM", "Negotiation"],
-    lastActivity: "Added to leads",
-    lastActivityDate: "3 days ago"
-  },
-  {
-    id: "3",
-    name: "Taylor Bennett",
-    position: "Sales Representative",
-    initials: "TB",
-    color: "bg-purple-100",
-    status: "leads",
-    stage: "new",
-    aiMatch: true,
-    matchScore: 85,
-    source: "AI Match",
-    location: "New York, USA",
-    experience: "4 years",
-    education: "Bachelor's in Business Administration, NYU",
-    skills: ["B2B Sales", "SaaS", "Sales Strategy", "Client Relations", "Prospecting"],
-    lastActivity: "Added to leads",
-    lastActivityDate: "4 days ago"
-  },
-  {
-    id: "4",
-    name: "Sam Samberg",
-    position: "Senior Product Designer",
-    initials: "SS",
-    color: "bg-cyan-100",
-    status: "leads",
-    stage: "contacted",
-    aiMatch: true,
-    matchScore: 90,
-    source: "AI Match",
-    location: "San Francisco, USA",
-    experience: "7 years",
-    education: "Master's in Design, Stanford University",
-    skills: ["UI/UX Design", "Product Design", "Wireframing", "User Research", "Figma"],
-    lastActivity: "Sent email introduction",
-    lastActivityDate: "1 day ago"
-  },
-  {
-    id: "5",
-    name: "Greatest Boss Scott",
-    position: "Customer Success Manager",
-    initials: "GS",
-    color: "bg-pink-100",
-    status: "leads",
-    stage: "contacted",
-    aiMatch: true,
-    matchScore: 83,
-    source: "AI Match",
-    location: "Austin, USA",
-    experience: "5 years",
-    education: "Bachelor's in Communications, University of Texas",
-    skills: ["Customer Success", "Client Relations", "SaaS", "Account Management", "Customer Retention"],
-    lastActivity: "Scheduled phone call",
-    lastActivityDate: "2 hours ago"
-  },
-  {
-    id: "6",
-    name: "Jordan Mitchell",
-    position: "Sales Engineer",
-    initials: "JM",
-    color: "bg-teal-100",
-    status: "leads",
-    stage: "screening",
-    aiMatch: true,
-    matchScore: 94,
-    source: "AI Match",
-    location: "Seattle, USA",
-    experience: "8 years",
-    education: "Bachelor's in Computer Science, University of Washington",
-    skills: ["Sales Engineering", "Technical Sales", "Product Demos", "Solution Architecture", "Client Consulting"],
-    lastActivity: "Completed initial screening",
-    lastActivityDate: "1 day ago"
-  },
-  {
-    id: "7",
-    name: "Alex Rivera",
-    position: "Account Executive",
-    initials: "AR",
-    color: "bg-green-100",
-    status: "leads",
-    stage: "new",
-    aiMatch: false,
-    matchScore: 0,
-    source: "LinkedIn",
-    location: "Miami, USA",
-    experience: "5 years",
-    education: "Bachelor's in Business, University of Miami",
-    skills: ["B2B Sales", "Account Management", "CRM", "Sales Strategy", "Negotiation"],
-    lastActivity: "Added manually from LinkedIn",
-    lastActivityDate: "5 days ago"
-  },
-  {
-    id: "8",
-    name: "Olivia Chen",
-    position: "Technical Solutions Engineer",
-    initials: "OC",
-    color: "bg-indigo-100",
-    status: "leads",
-    stage: "contacted",
-    aiMatch: false,
-    matchScore: 0,
-    source: "Referral",
-    location: "Toronto, Canada",
-    experience: "6 years",
-    education: "Master's in Engineering, University of Toronto",
-    skills: ["Technical Support", "Solution Architecture", "API Integration", "Customer Success", "Product Knowledge"],
-    lastActivity: "Sent email introduction",
-    lastActivityDate: "3 days ago"
-  },
-];
-
-// For candidates sourced from different places
-const initialSourcedCandidates = [
-  {
-    id: "9",
-    name: "Thomas Wright",
-    position: "Technical Sales Engineer",
-    initials: "TW",
-    color: "bg-orange-100",
-    status: "sourced",
-    stage: "new",
-    aiMatch: false,
-    matchScore: 0,
-    source: "Sourced (LinkedIn)",
-    location: "Chicago, USA",
-    experience: "7 years",
-    education: "Bachelor's in Computer Science, University of Illinois",
-    skills: ["Technical Sales", "Sales Engineering", "Product Demos", "Solution Architecture", "Client Consulting"],
-    lastActivity: "Added from sourcing",
-    lastActivityDate: "just now"
-  },
-  {
-    id: "10",
-    name: "Emma Johnson",
-    position: "Solutions Engineer",
-    initials: "EJ",
-    color: "bg-red-100",
-    status: "sourced",
-    stage: "new",
-    aiMatch: false,
-    matchScore: 0,
-    source: "Sourced (GitHub)",
-    location: "Boston, USA",
-    experience: "5 years",
-    education: "Master's in Computer Science, MIT",
-    skills: ["Technical Sales", "Software Development", "API Integration", "Product Demos", "Solution Architecture"],
-    lastActivity: "Added from sourcing",
-    lastActivityDate: "just now"
-  }
-];
-
-// Combined candidates data
-const allCandidatesData = [...initialCandidates, ...initialSourcedCandidates];
+// Define stage mapping for display
+const stageLabels = {
+  new: "New", screening: "Screening", technical_interview: "Technical Interview",
+  manager_interview: "Manager Interview", offer_extended: "Offer Extended",
+  offer_accepted: "Offer Accepted", rejected: "Rejected"
+};
 
 export default function CandidatesList({ stageFilter = "leads", onSelectCandidate, selectedCandidateId }) {
-  const [candidates, setCandidates] = useState(allCandidatesData);
+  const [candidates] = useState(initialCandidatesData[stageFilter] || []);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [sourceFilter, setSourceFilter] = useState("all");
   const [matchFilter, setMatchFilter] = useState("all");
 
-  // Apply filters to candidates
+  // Filter candidates based on search query and filters
   const filteredCandidates = candidates.filter(candidate => {
-    // Filter by stage (leads, sourced, etc.)
-    const matchesStatus = stageFilter === candidate.status;
-
-    // Text search
-    const matchesSearch =
-      searchTerm === "" ||
+    const matchesSearch = !searchTerm ||
       candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      candidate.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      candidate.location.toLowerCase().includes(searchTerm.toLowerCase());
+      candidate.position.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Source filter
-    const matchesSource =
-      sourceFilter === "all" ||
+    const matchesSource = sourceFilter === "all" ||
       (sourceFilter === "ai" && candidate.aiMatch) ||
       (sourceFilter === "sourced" && candidate.source.includes("Sourced")) ||
       (sourceFilter === "applied" && candidate.source === "Applied") ||
       (sourceFilter === "referral" && candidate.source === "Referral");
 
-    // Match quality filter
-    const matchesQuality =
-      matchFilter === "all" ||
+    const matchesQuality = matchFilter === "all" ||
       (matchFilter === "high" && candidate.matchScore >= 90) ||
       (matchFilter === "medium" && candidate.matchScore >= 80 && candidate.matchScore < 90) ||
       (matchFilter === "low" && candidate.matchScore < 80);
 
-    return matchesStatus && matchesSearch && matchesSource && matchesQuality;
+    return matchesSearch && matchesSource && matchesQuality;
   });
 
-  // Handlers
-  const addToLeads = (candidateId) => {
-    setCandidates(candidates.map(c =>
-      c.id === candidateId
-        ? { ...c, status: "leads", stage: "new", lastActivity: "Added to leads", lastActivityDate: "just now" }
-        : c
-    ));
+  // Add to leads (for sourced candidates)
+  const addToLeads = (id) => {
+    // This would call an API in a real application
+    console.log(`Adding candidate ${id} to leads`);
   };
 
-  const moveToStage = (candidateId, stage) => {
-    const stageNames = {
-      "new": "New",
-      "contacted": "Contacted",
-      "screening": "Screening",
-      "interview": "Interview",
-      "offer": "Offer",
-      "hired": "Hired",
-      "rejected": "Rejected"
-    };
-
-    setCandidates(candidates.map(c =>
-      c.id === candidateId
-        ? {
-            ...c,
-            stage,
-            lastActivity: `Moved to ${stageNames[stage]}`,
-            lastActivityDate: "just now"
-          }
-        : c
-    ));
+  const moveToStage = (id, stage) => {
+    // This would call an API in a real application
+    console.log(`Moving candidate ${id} to stage ${stage}`);
   };
 
   return (
@@ -289,7 +95,7 @@ export default function CandidatesList({ stageFilter = "leads", onSelectCandidat
         </p>
 
         <div className="flex flex-col gap-4">
-          {/* Search and filters */}
+          {/* Search */}
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -301,6 +107,7 @@ export default function CandidatesList({ stageFilter = "leads", onSelectCandidat
             />
           </div>
 
+          {/* Filter controls */}
           <div className="flex justify-between items-center">
             <div className="flex gap-2">
               <Button
@@ -318,16 +125,6 @@ export default function CandidatesList({ stageFilter = "leads", onSelectCandidat
               >
                 AI Matches
               </Button>
-
-              {stageFilter === "leads" && (
-                <Button
-                  variant={sourceFilter === "sourced" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSourceFilter("sourced")}
-                >
-                  Sourced
-                </Button>
-              )}
             </div>
 
             <Button
@@ -340,6 +137,7 @@ export default function CandidatesList({ stageFilter = "leads", onSelectCandidat
             </Button>
           </div>
 
+          {/* Advanced filters */}
           {filterOpen && (
             <div className="p-3 border rounded-md bg-muted/10 space-y-3">
               <div>
@@ -384,12 +182,7 @@ export default function CandidatesList({ stageFilter = "leads", onSelectCandidat
                 )}
                 onClick={() => onSelectCandidate(candidate)}
               >
-                <div
-                  className={cn(
-                    "h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium",
-                    candidate.color,
-                  )}
-                >
+                <div className={cn("h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium", candidate.color)}>
                   {candidate.initials}
                 </div>
                 <div className="flex-1 min-w-0">

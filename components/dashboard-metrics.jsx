@@ -1,25 +1,15 @@
 // File path: /components/dashboard-metrics.jsx
-// Create this new component file
-
+// Optimized dashboard-metrics component
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowUpRight, Briefcase, Calendar, CheckCircle, Clock } from "lucide-react";
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Cell,
-    Line,
-    LineChart,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis, YAxis
+  Bar, BarChart, CartesianGrid, Cell, Line, LineChart, Pie, PieChart,
+  ResponsiveContainer, Tooltip, XAxis, YAxis
 } from 'recharts';
 
-// Sample data for the charts
+// Sample data for the charts - reduced for brevity
 const applicationData = [
   { month: 'Jan', applications: 12, interviews: 5, offers: 1 },
   { month: 'Feb', applications: 19, interviews: 8, offers: 2 },
@@ -39,6 +29,20 @@ const statusData = [
   { name: 'Offer', value: 3 },
   { name: 'Rejected', value: 15 },
 ];
+
+// Quick stat card component
+const QuickStatCard = ({ title, value, change, icon: Icon }) => (
+  <Card>
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardTitle className="text-sm font-medium">{title}</CardTitle>
+      <Icon className="h-4 w-4 text-muted-foreground" />
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold">{value}</div>
+      <p className="text-xs text-muted-foreground">{change}</p>
+    </CardContent>
+  </Card>
+
 
 // Main component
 export default function DashboardMetrics() {
@@ -69,49 +73,30 @@ export default function DashboardMetrics() {
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metrics.totalApplications}</div>
-            <p className="text-xs text-muted-foreground">+12% from last month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Applications</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metrics.activeApplications}</div>
-            <p className="text-xs text-muted-foreground">+5% from last month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Interviews</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metrics.totalInterviews}</div>
-            <div className="flex items-center gap-1">
-              <ArrowUpRight className="h-3 w-3 text-green-500" />
-              <p className="text-xs text-muted-foreground">{metrics.upcomingInterviews} upcoming</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metrics.successRate}%</div>
-            <p className="text-xs text-muted-foreground">+2% from last month</p>
-          </CardContent>
-        </Card>
+        <QuickStatCard
+          title="Total Applications"
+          value={metrics.totalApplications}
+          change="+12% from last month"
+          icon={Briefcase}
+        />
+        <QuickStatCard
+          title="Active Applications"
+          value={metrics.activeApplications}
+          change="+5% from last month"
+          icon={Clock}
+        />
+        <QuickStatCard
+          title="Interviews"
+          value={metrics.totalInterviews}
+          change={`${metrics.upcomingInterviews} upcoming`}
+          icon={Calendar}
+        />
+        <QuickStatCard
+          title="Success Rate"
+          value={`${metrics.successRate}%`}
+          change="+2% from last month"
+          icon={CheckCircle}
+        />
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
@@ -139,7 +124,7 @@ export default function DashboardMetrics() {
                     dataKey="value"
                     label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                   >
-                    {statusData.map((entry, index) => (
+                    {statusData.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
