@@ -1,9 +1,9 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ApplicationStats } from "@/components/dashboard/application-stats"
 import { ApplicationStatusChart } from "@/components/dashboard/application-status-chart"
 import { RecentApplications } from "@/components/dashboard/recent-applications"
 import { UpcomingInterviews } from "@/components/dashboard/upcoming-interviews"
-import { ApplicationStats } from "@/components/dashboard/application-stats"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function DashboardPage() {
   return (

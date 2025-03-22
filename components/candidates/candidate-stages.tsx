@@ -1,46 +1,109 @@
+// File path: /components/candidates/candidate-stages.tsx
+// Replace your existing candidate-stages component with this content
+
 "use client"
 
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
+import { ChevronDown, Plus } from "lucide-react"
+import { useEffect, useState } from "react"
 
-const stages = [
-  { id: "leads", name: "Leads", count: 11, active: true },
+// Stage definitions with counts that will be updated dynamically
+const initialStages = [
+  { id: "leads", name: "Leads", count: 0, active: true },
+  { id: "sourced", name: "Sourced", count: 0, active: false },
   { id: "shortlist", name: "Shortlist", count: 0, active: false },
   { id: "interview", name: "Interview", count: 0, active: false },
   { id: "offer", name: "Offer", count: 0, active: false },
-  { id: "hired", name: "Hired", count: 1, active: false },
+  { id: "hired", name: "Hired", count: 0, active: false },
   { id: "rejected", name: "Rejected", count: 0, active: false },
-]
+];
 
-export function CandidateStages() {
+export default function CandidateStages({ onStageSelect, activeStage = "leads" }) {
+  const [stages, setStages] = useState(initialStages)
+  const [counts, setCounts] = useState({
+    leads: 6,
+    sourced: 2,
+    shortlist: 3,
+    interview: 1,
+    offer: 0,
+    hired: 1,
+    rejected: 0,
+  })
+
+  // Update the stages when counts change
+  useEffect(() => {
+    setStages(prevStages =>
+      prevStages.map(stage => ({
+        ...stage,
+        count: counts[stage.id],
+        active: stage.id === activeStage
+      }))
+    )
+  }, [counts, activeStage])
+
+  // Handle stage selection
+  const handleStageClick = (stageId) => {
+    if (onStageSelect) {
+      onStageSelect(stageId)
+    }
+  }
+
+  // For demonstration purposes, simulate adding a candidate
+  const addCandidate = (stageId) => {
+    setCounts(prev => ({
+      ...prev,
+      [stageId]: prev[stageId] + 1
+    }))
+  }
+
   return (
     <div className="flex flex-wrap gap-2">
       {stages.map((stage) => (
-        <Button
-          key={stage.id}
-          variant={stage.active ? "default" : "outline"}
-          className={cn("h-10 gap-2", stage.active ? "bg-primary text-primary-foreground" : "")}
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className={stage.active ? "text-primary-foreground" : "text-muted-foreground"}
+        <div key={stage.id} className="flex">
+          <Button
+            variant={stage.active ? "default" : "outline"}
+            className={cn("h-10 rounded-r-none", stage.active ? "bg-primary text-primary-foreground" : "")}
+            onClick={() => handleStageClick(stage.id)}
           >
-            <path
-              d="M12 5v14M5 12h14"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          {stage.name} ({stage.count})
-        </Button>
+            {stage.name} ({stage.count})
+          </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant={stage.active ? "default" : "outline"}
+                className={cn(
+                  "h-10 px-2 rounded-l-none border-l-0",
+                  stage.active ? "bg-primary text-primary-foreground" : ""
+                )}
+              >
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => addCandidate(stage.id)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Candidate
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Export Candidates
+              </DropdownMenuItem>
+              {stage.id !== "leads" && stage.id !== "sourced" && (
+                <DropdownMenuItem>
+                  Schedule Batch Interviews
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ))}
     </div>
   )
 }
-

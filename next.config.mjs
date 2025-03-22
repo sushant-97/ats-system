@@ -1,3 +1,5 @@
+// next.config.mjs is a special file that allows you to use ES Modules in your Next.js configuration.
+
 let userConfig = undefined
 try {
   userConfig = await import('./v0-user-next.config')

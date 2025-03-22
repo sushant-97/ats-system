@@ -1,3 +1,4 @@
+// tsconfig.json is a configuration file that tells the TypeScript compiler how to compile the code.
 {
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -19,6 +20,7 @@
       }
     ],
     "paths": {
+      "@components/*": ["components/*"],
       "@/*": ["./*"]
     }
   },
