@@ -1,6 +1,4 @@
-// File path: /app/dashboard/applications/page.tsx
-// Replace your existing applications page with this content
-
+// app/dashboard/applications/page.tsx
 "use client"
 
 import { Button } from "@/components/ui/button"
